@@ -1,0 +1,51 @@
+pipeline {
+   agent none
+    stages {
+        stage('GIT') { 
+            agent {
+                label 'Windows_Slave'
+            } 
+            steps {
+                echo "This is SCM stage"
+                git credentialsId: 'fff8502e-d984-4eaf-9c22-5d4f6fb2ee36', url: 'https://github.com/Shravani2780/Example1.git'
+            }
+        }
+        stage('Build') { 
+            agent {
+                label 'master'
+            } 
+            steps {
+                 echo "This is build stage"
+                 echo pwd()
+            }
+        }
+        stage('Run Tests'){
+            parallel {
+                stage('Test on Windows') { 
+                    agent {
+                        label 'Windows_Slave'
+                    }
+                    steps {
+                        echo "This is Test on Windows_Slave";
+                        echo pwd()
+                        readFile encoding: 'UTF-8', file: 'main.html'
+                    }
+                }
+                stage('Test on Master') { 
+                    agent {
+                        label 'master'
+                    }
+                    steps {
+                        echo "This is test on master"
+                        fileExists 'jenkinsfile'
+                    }
+                }
+            }
+        }
+        stage('Deploy') { 
+            steps {
+                echo "This is Deploy stage"
+            }
+        }
+    }
+}
