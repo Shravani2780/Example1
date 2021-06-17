@@ -9,7 +9,7 @@ pipeline {
 
     stage('Test') {
       steps {
-        sh 'echo pwd();'
+        echo 'this is test state'
       }
     }
 
